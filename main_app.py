@@ -140,10 +140,10 @@ def Pw_Notebook():
             decrypt_db()
             db = sqlite3.connect()
             cursor = db.cursor()
-            db.execute('INSERT INTO passwords VALUES (:App, :Username, :Password)',
-                        {'App':app_id_e.get(),
+            db.execute('INSERT INTO passwords VALUES (:URL, :Username, :Password)',
+                        {'URL':URL_e.get(),
                          'Username':username_e.get(),
-                         'Password':password.get()
+                         'Password':password_e.get()
                          })
             db.commit()
             db.close()
@@ -154,11 +154,33 @@ def Pw_Notebook():
 
         a_pass=Toplevel()
         a_pass.title("add Password")
-        a_pass.geometry
+        a_pass.geometry("300x200")
+        a_pass.iconbitmap("pdlock.ico")
 
+        pw_add_frame = LabelFrame(
+            a_pass, text='Add Password', padx=10, pady=10)
+        pw_add_frame.pack(padx=0,pady=15)
 
-        
+        another_button_frame = Frame(a_pass, padx=10, pady=10)
+        another_button_frame.pack(padx=0, pady=10)
 
+        URL=Label(pw_add_frame, text='URL')
+        URL.grid(row=0, column=0)
+        URL_e = Entry(pw_add_frame)
+        URL_e.grid(row=0, column=1)
+
+        username = Label(pw_add_frame,text = 'username/email')
+        username.grid(row=1, column=0)
+        username_e = Entry(pw_add_frame)
+        username_e.grid(row=1, column=1)
+
+        password = Label(pw_add_frame, text='password')
+        password.grid(row=2, column=0)
+        password_e=Entry(pw_add_frame)
+        password_e.grid(row=2, column=1)
+
+        submit_bttn = Button(another_button_frame, text='SUBMIT', command=save_pw)
+        submit_bttn.pack()
 
 
 
