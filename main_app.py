@@ -183,6 +183,120 @@ def Pw_Notebook():
         submit_bttn.pack()
 
 
+    def delete_pass():
+        def delete_pw():
+            decrypt_db()
+            db = sqlite3.connect('pw.db')
+            cursor = db.cursor()
+            cursor.execute("DELETE FROM passwords WHERE URL_id = :URL", {
+                'URL': URL_delete.get()
+            })
+            db.commit()
+            db.close()
+            encrypt_db()
+            a_pass.destroy()
+            Pw_Notebook_reload()
+            alert('Information', 'Password Deleted')
+
+        a_pass = Toplevel()
+        a_pass.title('Delete Password')
+        a_pass.geometry('300x200')
+        a_pass.iconbitmap('pdlock.ico')
+
+        pw_add_frame = LabelFrame(
+            a_pass, text='Add Password', padx=10, pady=10)
+        pw_add_frame.pack(padx=5, pady=5)
+
+        another_buttn_frame = Frame(a_pass, padx=10, pady=10)
+        another_buttn_frame.pack(padx=0, pady=15)
+
+        URL_id = Label(pw_add_frame, text="URL to delete: ")
+        URL_id.grid(row=0, column=0)
+        URL_delete = Entry(pw_add_frame)
+        URL_delete.grid(row=0, column=1)
+
+        # Submit Button
+        Add_record_bttn = Button(
+            another_buttn_frame, text="Delete", command=delete_pw)
+        Add_record_bttn.pack()
+
+
+    db_frame = Frame(notebook, text="Passwords:")
+    db_frame.pack(fill="both", expand="yes")
+
+
+    buttn_frame = Frame(notebook, padx=10,pady=0)
+    buttn_frame.pack(padx=5, pady=25)
+
+    URL_label = Label(db_frame, text="URL")
+    URL_label.grid(row=0, column=1)
+
+    username_label = Label(db_frame, text="username")
+    username_label.grid(row=0, column=2)
+
+    password_label = Label(db_frame, text="password")
+    password_label.grid(row=0, column=3)
+
+    decrypt_db()
+    db = sqlite3.connect('pw.db')
+    cursor=db.cursor()
+    cursor.execute("SELECT * FROM passwords")
+
+    i=1
+    for password_line in cursor:
+        for j in password_line :
+            line = str(i)
+            line_label=Label(db_frame, text=line+'.')
+            line_label.grid(row=i, column=0)
+            e=Entry(db_frame, width=20, fg=blue)
+            e.grid(row=i, column=j+1)
+            e.insert(END, password_line[j])
+        i+=1
+    encrypt_db()
+
+    #creating buttons for add and delete
+    add_record = Button(buttn_frame, text='Add Password', command=add_pass)
+    add_record.grid(row=0, column=0)
+
+    delete_record = Button(
+        buttn_frame, text='Delete Password', command=delete_pass)
+    delete_record.grid(row=0, column=1)
+
+    def Settings():
+        settings=Toplevel()
+        settings.title("Settings")
+        settings.geometry("300x300")
+        settings.iconbitmap('pdlock.ico')
+
+        change_m_frame = LabelFrame(settings, text='Change Master Password', padx=10, pady=10 )
+        change_m_frame.pack(padx=10, pady=10)
+
+        settings_buttn_frame=Frame(settings)
+        settings_buttn_frame.pack(padx=10, pady=20)
+
+        def change_m():
+            with open('pw.txt','wb') as f:
+                f.seek(0)
+                global m_password
+                m_password = masterpassword_new.get()
+                password_write = m_password.encode('utf-8')
+                password_write = my_fernet.encrypt(password_write)
+                f.write(password_write)
+                alert('info', 'Master password changed successfully')
+
+
+        masterpassword_new = Entry(change_m_frame)
+        masterpassword_new.pack()
+
+
+        change_m_buttn = Button(change_m_frame, text='change master password', command= change_m)
+        change_m_buttn.pack()
+        
+
+
+
+
+
 
 
 
