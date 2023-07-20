@@ -288,10 +288,74 @@ def Pw_Notebook():
         masterpassword_new = Entry(change_m_frame)
         masterpassword_new.pack()
 
-
         change_m_buttn = Button(change_m_frame, text='change master password', command= change_m)
         change_m_buttn.pack()
-        
+
+    def Authenticate1():
+
+        Authenticate = Toplevel()
+        Authenticate.title("Authenticate")
+        Authenticate.geometry("150x150")
+        Authenticate.iconbitmap("padlock.ico")
+
+        auth_frame = LabelFrame(Authenticate, text='Enter Master Password')
+        auth_frame.pack(fill="both", expand="yes")
+
+        button_frame1 = Frame(auth_frame)
+        button_frame1.pack()
+
+        m_password_entry=Entry(auth_frame, width=30)
+        m_password_entry.pack()
+
+        def main_authentication1():
+
+            m_entry=m_password_entry.get()
+            if m_entry == m_password: 
+                Authenticate.destroy()
+                Pw_Notebook()
+
+            else:
+                alert("wrong password", kind="Warning")
+        Auth_Button = Button(button_frame1, text='Authenticate', command=main_authentication1)
+        Auth_Button.pack()
+
+        def Authenticate2():
+
+            Authenticate = Toplevel()
+            Authenticate.title("Authenticate")
+            Authenticate.geometry("150x150")
+            Authenticate.iconbitmap("padlock.ico")
+
+            auth_frame = LabelFrame(Authenticate, text='Enter Master Password')
+            auth_frame.pack(fill="both", expand="yes")
+
+            button_frame1 = Frame(auth_frame)
+            button_frame1.pack()
+
+            m_password_entry=Entry(auth_frame, width=30)
+            m_password_entry.pack()
+
+            def main_authentication2():
+
+                m_entry=m_password_entry.get()
+                if m_entry == m_password: 
+                    Authenticate.destroy()
+                    Settings()
+
+                else:
+                    alert("wrong password", kind="Warning")
+            Auth_Button = Button(button_frame1, text='Authenticate', command=main_authentication2)
+            Auth_Button.pack()
+            
+
+
+                
+
+
+
+
+
+
 
 
 
