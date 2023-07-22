@@ -1,6 +1,8 @@
 from tkinter import *
 from cryptography.fernet import Fernet
 import sqlite3
+import random
+from tkinter import messagebox
 my_fernet = ''
 
 root = Tk()
@@ -91,15 +93,15 @@ with open('firstrun.txt', 'a+') as f:
     else:
         root.withdraw()
         f.seek(0)
-        f.wrie('1')
+        f.write('1')
         db = sqlite3.connect('pw.db')
         cursor = db.cursor()
-        db.execute("""
+        db.execute('''
             CREATE TABLE Passwords(
                    URL VARCHAR(255),
                    username VARCHAR(255),
                    password VARCHAR(255))
-                   """)
+                   ''')
         db.commit()
         db.close()
 
@@ -107,7 +109,7 @@ with open('firstrun.txt', 'a+') as f:
         First_time = Toplevel()
         First_time.title('first-use')
         First_time.geometry('250x250')
-        First_time.iconbitmap('padlock.ico')
+        First_time.iconbitmap("padlock.ico")
 
         #setting up the label for first time
         labelframe = LabelFrame(
@@ -262,99 +264,159 @@ def Pw_Notebook():
         buttn_frame, text='Delete Password', command=delete_pass)
     delete_record.grid(row=0, column=1)
 
-    def Settings():
-        settings=Toplevel()
-        settings.title("Settings")
-        settings.geometry("300x300")
-        settings.iconbitmap('pdlock.ico')
+def Settings():
+    settings=Toplevel()
+    settings.title("Settings")
+    settings.geometry("300x300")
+    settings.iconbitmap('pdlock.ico')
 
-        change_m_frame = LabelFrame(settings, text='Change Master Password', padx=10, pady=10 )
-        change_m_frame.pack(padx=10, pady=10)
+    change_m_frame = LabelFrame(settings, text='Change Master Password', padx=10, pady=10 )
+    change_m_frame.pack(padx=10, pady=10)
 
-        settings_buttn_frame=Frame(settings)
-        settings_buttn_frame.pack(padx=10, pady=20)
+    settings_buttn_frame=Frame(settings)
+    settings_buttn_frame.pack(padx=10, pady=20)
 
-        def change_m():
-            with open('pw.txt','wb') as f:
-                f.seek(0)
-                global m_password
-                m_password = masterpassword_new.get()
-                password_write = m_password.encode('utf-8')
-                password_write = my_fernet.encrypt(password_write)
-                f.write(password_write)
-                alert('info', 'Master password changed successfully')
-
-
-        masterpassword_new = Entry(change_m_frame)
-        masterpassword_new.pack()
-
-        change_m_buttn = Button(change_m_frame, text='change master password', command= change_m)
-        change_m_buttn.pack()
-
-    def Authenticate1():
-
-        Authenticate = Toplevel()
-        Authenticate.title("Authenticate")
-        Authenticate.geometry("150x150")
-        Authenticate.iconbitmap("padlock.ico")
-
-        auth_frame = LabelFrame(Authenticate, text='Enter Master Password')
-        auth_frame.pack(fill="both", expand="yes")
-
-        button_frame1 = Frame(auth_frame)
-        button_frame1.pack()
-
-        m_password_entry=Entry(auth_frame, width=30)
-        m_password_entry.pack()
-
-        def main_authentication1():
-
-            m_entry=m_password_entry.get()
-            if m_entry == m_password: 
-                Authenticate.destroy()
-                Pw_Notebook()
-
-            else:
-                alert("wrong password", kind="Warning")
-        Auth_Button = Button(button_frame1, text='Authenticate', command=main_authentication1)
-        Auth_Button.pack()
-
-        def Authenticate2():
-
-            Authenticate = Toplevel()
-            Authenticate.title("Authenticate")
-            Authenticate.geometry("150x150")
-            Authenticate.iconbitmap("padlock.ico")
-
-            auth_frame = LabelFrame(Authenticate, text='Enter Master Password')
-            auth_frame.pack(fill="both", expand="yes")
-
-            button_frame1 = Frame(auth_frame)
-            button_frame1.pack()
-
-            m_password_entry=Entry(auth_frame, width=30)
-            m_password_entry.pack()
-
-            def main_authentication2():
-
-                m_entry=m_password_entry.get()
-                if m_entry == m_password: 
-                    Authenticate.destroy()
-                    Settings()
-
-                else:
-                    alert("wrong password", kind="Warning")
-            Auth_Button = Button(button_frame1, text='Authenticate', command=main_authentication2)
-            Auth_Button.pack()
-            
+    def change_m():
+        with open('pw.txt','wb') as f:
+            f.seek(0)
+            global m_password
+            m_password = masterpassword_new.get()
+            password_write = m_password.encode('utf-8')
+            password_write = my_fernet.encrypt(password_write)
+            f.write(password_write)
+            alert('info', 'Master password changed successfully')
 
 
-                
+    masterpassword_new = Entry(change_m_frame)
+    masterpassword_new.pack()
+
+    change_m_buttn = Button(change_m_frame, text='change master password', command= change_m)
+    change_m_buttn.pack()
+
+def Authenticate1():
+
+    Authenticate = Toplevel()
+    Authenticate.title("Authenticate")
+    Authenticate.geometry("150x150")
+    Authenticate.iconbitmap("padlock.ico")
+
+    auth_frame = LabelFrame(Authenticate, text='Enter Master Password')
+    auth_frame.pack(fill="both", expand="yes")
+
+    button_frame1 = Frame(auth_frame)
+    button_frame1.pack()
+
+    m_password_entry=Entry(auth_frame, width=30)
+    m_password_entry.pack()
+
+    def main_authentication1():
+
+        m_entry=m_password_entry.get()
+        if m_entry == m_password: 
+            Authenticate.destroy()
+            Pw_Notebook()
+
+        else:
+            alert("wrong password", kind="Warning")
+    Auth_Button = Button(button_frame1, text='Authenticate', command=main_authentication1)
+    Auth_Button.pack()
+
+def Authenticate2():
+
+    Authenticate = Toplevel()
+    Authenticate.title("Authenticate")
+    Authenticate.geometry("150x150")
+    Authenticate.iconbitmap("padlock.ico")
+
+    auth_frame = LabelFrame(Authenticate, text='Enter Master Password')
+    auth_frame.pack(fill="both", expand="yes")
+
+    button_frame1 = Frame(auth_frame)
+    button_frame1.pack()
+
+    m_password_entry=Entry(auth_frame, width=30)
+    m_password_entry.pack()
+
+    def main_authentication2():
+
+        m_entry=m_password_entry.get()
+        if m_entry == m_password: 
+            Authenticate.destroy()
+            Settings()
+
+        else:
+            alert("wrong password", kind="Warning")
+    Auth_Button = Button(button_frame1, text='Authenticate', command=main_authentication2)
+    Auth_Button.pack()
 
 
+    Password_Notebook_bttn = Button(
+        bottom_bar, text="Password Notebook", command=Authenticate1
+    )
+    Password_Notebook_bttn.grid(row=0, column=0)
+
+    Settings_Bttn = Button(bottom_bar, text="Settings", command=Authenticate2)
+    Settings_Bttn.grid(row=1, column=0)
+
+    def alert(title, message, kind0='info', hidemain=True):
+        if kind not in ('error', 'warning', 'info'):
+            raise ValueError('unsupported error kind')
+        
+        show_method = getattr(messagebox, 'show{}'.format(kind))
+        show_method(title, message)
+
+    def generate_pass():
+        password_length = int(length_entry.get())
+        C="ABCDEFGHIJKLMNOPQRSTUVWXYZADEFKLMNOPQRSTUVWXYZ"
+        c="abcdefghijklmnopqrstuvwxyz"
+        n="0123456789"
+        s="&{([-_@)]}=+*$%!?"
+
+        generated_password=""
+        for x in range(0,password_length/4):
+            generated_password += str(random.choice(C)) +str(random.choice(c)) +str(random.choice(n)) +str(random.choice(s))
 
 
+        def save():
+            decrypt_db()
+            db=sqlite3.connect("pw.db")
+            cursor = db.cursor()
+            cursor.execute("INSERT INTO passwords VALUES(:URL, :Username, :Password)",
+                            {'URL':URL_entry.get(),
+                            'Username':Username_entry.get(),
+                            'Password':output_e.get()
+                            }
+                            )
+            db.commit()
+            db.close()
+            encrypt_db()
+            alert('information','password saved to Notebook')
 
+        URL_label=Label(output_frame, text='URL: ')
+        URL_label.grid(row=1, column=0)
+        URL_entry = Entry(output_frame)
+        URL_entry.grid(row=1, column=1)
+
+        Username_label=Label(output_frame, text='Username: ')
+        Username_label.grid(row=2, column=0)
+        Username_entry = Entry(output_frame)
+        Username_entry.grid(row=2, column=1)
+
+
+        output_label=Label(output_frame, text='Generated Password: ')
+        output_label.grid(row=0, column=0)
+        output_e = Entry(output_frame)
+        output_e.insert(generated_password)
+        output_e.grid(row=0, column=1)
+
+        root.clipboard_clear()
+        root.clipboard_append(generated_password)
+
+        save_password_bttn = Button(output_frame, text='Save Password', command=save)
+        save_password_bttn.grid(row=3, column=1)
+
+    generate_button = Button(rbutton_frame, text="Generate Password", command=generate_pass)
+    generate_button.grid(row=0, column=0)
 
 
 
