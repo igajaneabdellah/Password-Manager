@@ -142,7 +142,7 @@ def Pw_Notebook():
             decrypt_db()
             db = sqlite3.connect()
             cursor = db.cursor()
-            db.execute('INSERT INTO passwords VALUES (:URL, :Username, :Password)',
+            cursor.execute('INSERT INTO passwords VALUES (:URL, :Username, :Password)',
                         {'URL':URL_e.get(),
                          'Username':username_e.get(),
                          'Password':password_e.get()
