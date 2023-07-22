@@ -109,7 +109,7 @@ with open('firstrun.txt', 'a+') as f:
         First_time = Toplevel()
         First_time.title('first-use')
         First_time.geometry('250x250')
-        First_time.iconbitmap("padlock.ico")
+        First_time.iconbitmap("padlock.ico.png")
 
         #setting up the label for first time
         labelframe = LabelFrame(
@@ -129,7 +129,7 @@ def Pw_Notebook():
     notebook = Toplevel()
     notebook.title('Password Notebook')
     notebook.geometry('390x700')
-    notebook.iconbitmap('pdlock.ico')
+    notebook.iconbitmap('pdlock.ico.ico')
 
     def Pw_Notebook_reload():
         notebook.destroy()
@@ -157,7 +157,7 @@ def Pw_Notebook():
         a_pass=Toplevel()
         a_pass.title("add Password")
         a_pass.geometry("300x200")
-        a_pass.iconbitmap("pdlock.ico")
+        a_pass.iconbitmap("pdlock.ico.png")
 
         pw_add_frame = LabelFrame(
             a_pass, text='Add Password', padx=10, pady=10)
@@ -203,7 +203,7 @@ def Pw_Notebook():
         a_pass = Toplevel()
         a_pass.title('Delete Password')
         a_pass.geometry('300x200')
-        a_pass.iconbitmap('pdlock.ico')
+        a_pass.iconbitmap('pdlock.ico.png')
 
         pw_add_frame = LabelFrame(
             a_pass, text='Add Password', padx=10, pady=10)
@@ -268,7 +268,7 @@ def Settings():
     settings=Toplevel()
     settings.title("Settings")
     settings.geometry("300x300")
-    settings.iconbitmap('pdlock.ico')
+    settings.iconbitmap('pdlock.ico.png')
 
     change_m_frame = LabelFrame(settings, text='Change Master Password', padx=10, pady=10 )
     change_m_frame.pack(padx=10, pady=10)
@@ -298,7 +298,7 @@ def Authenticate1():
     Authenticate = Toplevel()
     Authenticate.title("Authenticate")
     Authenticate.geometry("150x150")
-    Authenticate.iconbitmap("padlock.ico")
+    Authenticate.iconbitmap("padlock.ico.png")
 
     auth_frame = LabelFrame(Authenticate, text='Enter Master Password')
     auth_frame.pack(fill="both", expand="yes")
@@ -326,7 +326,7 @@ def Authenticate2():
     Authenticate = Toplevel()
     Authenticate.title("Authenticate")
     Authenticate.geometry("150x150")
-    Authenticate.iconbitmap("padlock.ico")
+    Authenticate.iconbitmap("padlock.ico.png")
 
     auth_frame = LabelFrame(Authenticate, text='Enter Master Password')
     auth_frame.pack(fill="both", expand="yes")
