@@ -109,7 +109,7 @@ with open('firstrun.txt', 'a+') as f:
         First_time = Toplevel()
         First_time.title('first-use')
         First_time.geometry('250x250')
-        First_time.iconbitmap("padlock.ico.png")
+        First_time.iconbitmap("icons8-password-100")
 
         #setting up the label for first time
         labelframe = LabelFrame(
@@ -129,7 +129,7 @@ def Pw_Notebook():
     notebook = Toplevel()
     notebook.title('Password Notebook')
     notebook.geometry('390x700')
-    notebook.iconbitmap('pdlock.ico.ico')
+    notebook.iconbitmap('favicon.ico')
 
     def Pw_Notebook_reload():
         notebook.destroy()
@@ -140,7 +140,7 @@ def Pw_Notebook():
 
         def save_pw():
             decrypt_db()
-            db = sqlite3.connect()
+            db = sqlite3.connect('pw.db')
             cursor = db.cursor()
             cursor.execute('INSERT INTO passwords VALUES (:URL, :Username, :Password)',
                         {'URL':URL_e.get(),
@@ -157,7 +157,7 @@ def Pw_Notebook():
         a_pass=Toplevel()
         a_pass.title("add Password")
         a_pass.geometry("300x200")
-        a_pass.iconbitmap("pdlock.ico.png")
+        a_pass.iconbitmap("icons8-password-100")
 
         pw_add_frame = LabelFrame(
             a_pass, text='Add Password', padx=10, pady=10)
@@ -203,7 +203,7 @@ def Pw_Notebook():
         a_pass = Toplevel()
         a_pass.title('Delete Password')
         a_pass.geometry('300x200')
-        a_pass.iconbitmap('pdlock.ico.png')
+        a_pass.iconbitmap('icons8-password-100')
 
         pw_add_frame = LabelFrame(
             a_pass, text='Add Password', padx=10, pady=10)
@@ -223,7 +223,7 @@ def Pw_Notebook():
         Add_record_bttn.pack()
 
 
-    db_frame = Frame(notebook, text="Passwords:")
+    db_frame = LabelFrame(notebook, text="Passwords:")
     db_frame.pack(fill="both", expand="yes")
 
 
@@ -246,11 +246,11 @@ def Pw_Notebook():
 
     i=1
     for password_line in cursor:
-        for j in password_line :
+        for j in range(len(password_line)) :
             line = str(i)
             line_label=Label(db_frame, text=line+'.')
             line_label.grid(row=i, column=0)
-            e=Entry(db_frame, width=20, fg=blue)
+            e=Entry(db_frame, width=20, fg="blue")
             e.grid(row=i, column=j+1)
             e.insert(END, password_line[j])
         i+=1
@@ -268,7 +268,7 @@ def Settings():
     settings=Toplevel()
     settings.title("Settings")
     settings.geometry("300x300")
-    settings.iconbitmap('pdlock.ico.png')
+    settings.iconbitmap('icons8-password-100')
 
     change_m_frame = LabelFrame(settings, text='Change Master Password', padx=10, pady=10 )
     change_m_frame.pack(padx=10, pady=10)
@@ -293,32 +293,37 @@ def Settings():
     change_m_buttn = Button(change_m_frame, text='change master password', command= change_m)
     change_m_buttn.pack()
 
-def Authenticate1():
+def Authentication1():
 
+    # Creating Tkinter Window
     Authenticate = Toplevel()
-    Authenticate.title("Authenticate")
-    Authenticate.geometry("150x150")
-    Authenticate.iconbitmap("padlock.ico.png")
+    Authenticate.title('Authenticate')
+    Authenticate.geometry('150x150')
+    Authenticate.iconbitmap('icon_icon.ico')
 
-    auth_frame = LabelFrame(Authenticate, text='Enter Master Password')
-    auth_frame.pack(fill="both", expand="yes")
-
-    button_frame1 = Frame(auth_frame)
+    # Creating Components of the Window
+    AuthenticateFrame = LabelFrame(
+        Authenticate, text="Enter Master Password")
+    AuthenticateFrame.pack(fill="both", expand="yes")
+    button_frame1 = Frame(AuthenticateFrame)
     button_frame1.pack()
 
-    m_password_entry=Entry(auth_frame, width=30)
+    # Entry Field for Password
+    m_password_entry = Entry(AuthenticateFrame, width=25)
     m_password_entry.pack()
 
-    def main_authentication1():
-
-        m_entry=m_password_entry.get()
-        if m_entry == m_password: 
+    # Where the real authentication code goes.
+    # This one is for Password Notebook.:
+    def RealAuthenticate1():
+        m_entry = m_password_entry.get()
+        if m_entry == m_password:
             Authenticate.destroy()
             Pw_Notebook()
 
         else:
-            alert("wrong password", kind="Warning")
-    Auth_Button = Button(button_frame1, text='Authenticate', command=main_authentication1)
+            alert('Password Wrong', 'Password is Incorrect', kind='warning')
+    Auth_Button = Button(
+        button_frame1, text='Authenticate', command=RealAuthenticate1)
     Auth_Button.pack()
 
 def Authenticate2():
@@ -326,7 +331,7 @@ def Authenticate2():
     Authenticate = Toplevel()
     Authenticate.title("Authenticate")
     Authenticate.geometry("150x150")
-    Authenticate.iconbitmap("padlock.ico.png")
+    Authenticate.iconbitmap("favicon.ico")
 
     auth_frame = LabelFrame(Authenticate, text='Enter Master Password')
     auth_frame.pack(fill="both", expand="yes")
@@ -350,73 +355,80 @@ def Authenticate2():
     Auth_Button.pack()
 
 
-    Password_Notebook_bttn = Button(
-        bottom_bar, text="Password Notebook", command=Authenticate1
-    )
-    Password_Notebook_bttn.grid(row=0, column=0)
+Password_Notebook_bttn = Button(
+    bottom_bar, text="Password Notebook", command=Authentication1
+)
+Password_Notebook_bttn.grid(row=0, column=0)
 
-    Settings_Bttn = Button(bottom_bar, text="Settings", command=Authenticate2)
-    Settings_Bttn.grid(row=1, column=0)
+Settings_Bttn = Button(bottom_bar, text="Settings", command=Authenticate2)
+Settings_Bttn.grid(row=1, column=0)
 
-    def alert(title, message, kind0='info', hidemain=True):
-        if kind not in ('error', 'warning', 'info'):
-            raise ValueError('unsupported error kind')
-        
-        show_method = getattr(messagebox, 'show{}'.format(kind))
-        show_method(title, message)
+def alert(title, message, kind='info', hidemain=True):
+    if kind not in ('error', 'warning', 'info'):
+        raise ValueError('unsupported error kind')
 
-    def generate_pass():
-        password_length = int(length_entry.get())
-        C="ABCDEFGHIJKLMNOPQRSTUVWXYZADEFKLMNOPQRSTUVWXYZ"
-        c="abcdefghijklmnopqrstuvwxyz"
-        n="0123456789"
-        s="&{([-_@)]}=+*$%!?"
+    show_method = getattr(messagebox, 'show{}'.format(kind))
+    show_method(title, message)
 
-        generated_password=""
-        for x in range(0,password_length/4):
-            generated_password += str(random.choice(C)) +str(random.choice(c)) +str(random.choice(n)) +str(random.choice(s))
+def generate_pass():
+    password_length = int(length_entry.get())
+    C="ABCDEFGHIJKLMNOPQRSTUVWXYZADEFKLMNOPQRSTUVWXYZ"
+    c="abcdefghijklmnopqrstuvwxyz"
+    n="0123456789"
+    s="&{([-_@)]}=+*$%!?"
 
-
-        def save():
-            decrypt_db()
-            db=sqlite3.connect("pw.db")
-            cursor = db.cursor()
-            cursor.execute("INSERT INTO passwords VALUES(:URL, :Username, :Password)",
-                            {'URL':URL_entry.get(),
-                            'Username':Username_entry.get(),
-                            'Password':output_e.get()
-                            }
-                            )
-            db.commit()
-            db.close()
-            encrypt_db()
-            alert('information','password saved to Notebook')
-
-        URL_label=Label(output_frame, text='URL: ')
-        URL_label.grid(row=1, column=0)
-        URL_entry = Entry(output_frame)
-        URL_entry.grid(row=1, column=1)
-
-        Username_label=Label(output_frame, text='Username: ')
-        Username_label.grid(row=2, column=0)
-        Username_entry = Entry(output_frame)
-        Username_entry.grid(row=2, column=1)
+    generated_password=""
+    while len(generated_password) != password_length:
+        if len(generated_password) < password_length:
+            generated_password += random.choice(C)
+        if len(generated_password) < password_length:
+            generated_password += random.choice(c)
+        if len(generated_password) < password_length:
+            generated_password += random.choice(n)
+        if len(generated_password) < password_length:
+            generated_password += random.choice(s)
 
 
-        output_label=Label(output_frame, text='Generated Password: ')
-        output_label.grid(row=0, column=0)
-        output_e = Entry(output_frame)
-        output_e.insert(generated_password)
-        output_e.grid(row=0, column=1)
+    def save():
+        decrypt_db()
+        db=sqlite3.connect("pw.db")
+        cursor = db.cursor()
+        cursor.execute("INSERT INTO passwords VALUES(:URL, :Username, :Password)",
+                        {'URL':URL_entry.get(),
+                        'Username':Username_entry.get(),
+                        'Password':output_e.get()
+                        }
+                        )
+        db.commit()
+        db.close()
+        encrypt_db()
+        alert('information','password saved to Notebook')
 
-        root.clipboard_clear()
-        root.clipboard_append(generated_password)
+    URL_label=Label(output_frame, text='URL: ')
+    URL_label.grid(row=1, column=0)
+    URL_entry = Entry(output_frame)
+    URL_entry.grid(row=1, column=1)
 
-        save_password_bttn = Button(output_frame, text='Save Password', command=save)
-        save_password_bttn.grid(row=3, column=1)
+    Username_label=Label(output_frame, text='Username: ')
+    Username_label.grid(row=2, column=0)
+    Username_entry = Entry(output_frame)
+    Username_entry.grid(row=2, column=1)
 
-    generate_button = Button(rbutton_frame, text="Generate Password", command=generate_pass)
-    generate_button.grid(row=0, column=0)
+
+    output_label=Label(output_frame, text='Generated Password: ')
+    output_label.grid(row=0, column=0)
+    output_e = Entry(output_frame)
+    output_e.insert(0,generated_password)
+    output_e.grid(row=0, column=1)
+
+    root.clipboard_clear()
+    root.clipboard_append(generated_password)
+
+    save_password_bttn = Button(output_frame, text='Save Password', command=save)
+    save_password_bttn.grid(row=3, column=1)
+
+generate_button = Button(rbutton_frame, text="Generate Password", command=generate_pass)
+generate_button.grid(row=0, column=0)
 
 
 
