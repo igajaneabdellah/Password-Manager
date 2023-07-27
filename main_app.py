@@ -5,6 +5,7 @@ import random
 from tkinter import messagebox
 import os
 import webbrowser
+import time
 
 
 # Master Password
@@ -356,15 +357,17 @@ def Settings():
 
     masterpassword_new = Entry(change_m_frame, show='*')
     masterpassword_new.pack()
-    
-    Check_button = Checkbutton(change_m_frame, text='show password', command=show_password)
-    Check_button.pack()
 
     def show_password():
             if masterpassword_new.cget('show')=='*':
                 masterpassword_new.config(show='')
             else:
                 masterpassword.config(show='*')
+
+    Check_button = Checkbutton(change_m_frame, text='show password', command=show_password)
+    Check_button.pack()
+
+    
 
     
 
@@ -397,24 +400,33 @@ def Authentication1():
     Check_button = Checkbutton(AuthenticateFrame, text='show password', command=show_password)
     Check_button.pack()
 
-    
-
-
-    
     # Entry Field for Password
     m_password_entry = Entry(AuthenticateFrame, width=25, show='*')
     m_password_entry.pack()
 
     # Where the real authentication code goes.
     # This one is for Password Notebook.:
+    global failed_attempts
+    failed_attempts=0
     def RealAuthenticate1():
+        global failed_attempts
         m_entry = m_password_entry.get()
         if m_entry == m_password:
             Authenticate.destroy()
             Pw_Notebook()
-
         else:
-            alert('Password Wrong', 'Password is Incorrect', kind='warning')
+            failed_attempts += 1
+            if failed_attempts >= 3:
+                m_password_entry.config(state="disabled")  # Disable the password entry
+                m_password_entry.after(300000, reset_failed_attempts)
+            alert('Wrong Password', 'Password is Incorrect', kind='warning')
+            print(failed_attempts)
+
+    def reset_failed_attempts():
+        global failed_attempts
+        failed_attempts = 0
+        m_password_entry.config(state="normal")
+
     Auth_Button = Button(
         button_frame1, text='Authenticate', command=RealAuthenticate1)
     Auth_Button.pack()
@@ -435,33 +447,51 @@ def Authentication2():
     button_frame1 = Frame(AuthenticateFrame)
     button_frame1.pack()
 
+    def show_password():
+        if m_password_entry.cget('show')=='*':
+            m_password_entry.config(show='')
+        else:
+            masterpassword.config(show='*')
+
     # Entry Field for Password
     Check_button = Checkbutton(AuthenticateFrame, text='show password', command=show_password)
     Check_button.pack()
 
-    def show_password():
-            if m_password_entry.cget('show')=='*':
-                m_password_entry.config(show='')
-            else:
-                masterpassword.config(show='*')
+
+    # Where the real authentication code goes.
+    # This one is for Password Notebook.
 
     m_password_entry = Entry(AuthenticateFrame, width=25, show='*')
     m_password_entry.pack()
 
-    # Where the real authentication code goes.
-    # This one is for Password Notebook.
+    global failed_attempts
+    failed_attempts=0
+
+
     def RealAuthenticate2():
+        global failed_attempts
         m_entry = m_password_entry.get()
         if m_entry == m_password:
             Authenticate.destroy()
             Settings()
-
         else:
+            failed_attempts += 1
+            if failed_attempts >= 3:
+                m_password_entry.config(state="disabled")  # Disable the password entry
+                m_password_entry.after(300000, reset_failed_attempts)
             alert('Wrong Password', 'Password is Incorrect', kind='warning')
+            print(failed_attempts)
+
+    def reset_failed_attempts():
+        global failed_attempts
+        failed_attempts = 0
+        m_password_entry.config(state="normal")
+
     Auth_Button = Button(
         button_frame1, text='Authenticate', command=RealAuthenticate2)
     Auth_Button.pack()
 
+    
 
 # Bottom Bar Buttons
 Password_Notebook_Bttn = Button(
@@ -586,3 +616,9 @@ generate_text.grid(row=1, column=0)
 
 # Starting the Windows
 root.mainloop()
+
+
+
+
+
+
