@@ -3,8 +3,7 @@ import sqlite3
 from tkinter import *
 import random
 from tkinter import messagebox
-import os
-import webbrowser
+import shutil
 import time
 
 
@@ -16,7 +15,7 @@ my_fernet = ""
 
 # Setting up Tkinter Window
 root = Tk()
-root.geometry("300x300")
+root.geometry("400x400")
 root.title("Password Manager/Generator")
 root.iconbitmap('icon_icon.ico')
 
@@ -32,6 +31,111 @@ secondary_frame.pack(padx=20, pady=20)
 rbutton_frame.pack(padx=10, pady=0)
 output_frame.pack(padx=15, pady=5)
 bottom_bar.pack(side=BOTTOM)
+
+
+
+
+def Authentication3():
+    # Define a variable to store the last failed attempt time
+    global last_failed_attempt_time
+    now = time.time()
+    
+    if last_failed_attempt_time is not None and now - last_failed_attempt_time < 180:
+        # If the user has failed authentication within the last 3 minutes, show a message
+        # and do not create the authentication window again.
+        alert('Too Many Attempts', 'You can retry after 3 minutes.')
+        return
+    
+    last_failed_attempt_time = None  # Reset last_failed_attempt_time since the authentication window will be displayed
+
+    # Creating Tkinter Window
+    Authenticate = Toplevel()
+    Authenticate.title('Authenticate')
+    Authenticate.geometry('150x150')
+    Authenticate.iconbitmap('icon_icon.ico')
+
+    # Creating Components of the Window
+    AuthenticateFrame = LabelFrame(
+        Authenticate, text="Enter Master Password")
+    AuthenticateFrame.pack(fill="both", expand="yes")
+    button_frame1 = Frame(AuthenticateFrame)
+    button_frame1.pack()
+    
+    def show_password():
+        if m_password_entry.cget('show') == '*':
+            m_password_entry.config(show='')
+        else:
+            m_password_entry.config(show='*')
+
+    Check_button = Checkbutton(AuthenticateFrame, text='show password', command=show_password)
+    Check_button.pack()
+
+    # Entry Field for Password
+    m_password_entry = Entry(AuthenticateFrame, width=25, show='*')
+    m_password_entry.pack()
+
+    # Where the real authentication code goes.
+    # This one is for Password Notebook.:
+    global failed_attempts
+    failed_attempts = 0
+
+    def RealAuthenticate3():
+        global failed_attempts, last_failed_attempt_time
+        m_entry = m_password_entry.get()
+        if m_entry == m_password:
+            Authenticate.destroy()
+            store_pw()
+        else:
+            failed_attempts += 1
+            if failed_attempts >= 3:
+                m_password_entry.config(state="disabled")  # Disable the password entry
+                last_failed_attempt_time = time.time()  # Set the last_failed_attempt_time to the current time
+                m_password_entry.after(300000, reset_failed_attempts)
+            alert('Wrong Password', 'Password is Incorrect', kind='warning')
+            print(failed_attempts)
+
+    def reset_failed_attempts():
+        global failed_attempts
+        failed_attempts = 0
+        m_password_entry.config(state="normal")
+
+    Auth_Button = Button(
+        button_frame1, text='Authenticate', command=RealAuthenticate3)
+    Auth_Button.pack()
+
+# Initialize last_failed_attempt_time as None at the beginning of your code
+last_failed_attempt_time = None
+
+
+
+
+def store_pw():
+    global path
+
+    def copy_file():
+        path = store_entry.get()
+        shutil.copy("pw.txt", path)
+        messagebox.showinfo("password saved")
+        store_pw_frame.destroy()
+
+    store_pw_frame = Toplevel(root, padx=5, pady=5)
+    store_pw_frame.title("backup")
+    store_pw_frame.geometry("300x200")
+
+    store_label = LabelFrame(store_pw_frame, text="Enter storage path:")
+    store_label.pack()
+
+    store_entry = Entry(store_label)  # Removed "Text=" from Entry, as it's not valid for Entry widget
+    store_entry.pack()
+
+    store_bttn = Button(store_label, text="Store", command=copy_file)  # Moved this line inside store_pw()
+    store_bttn.pack()
+
+    
+
+store_frame = Button(root, text="store password file", command= Authentication3 )
+store_frame.pack()
+
 
 # Lables
 title = Label(main_frame, text="Password Generator")
@@ -366,18 +470,26 @@ def Settings():
 
     Check_button = Checkbutton(change_m_frame, text='show password', command=show_password)
     Check_button.pack()
-
-    
-
-    
-
     change_m_buttn = Button(settings_buttn_frame,
                             text="Change Master Password", command=change_m)
     change_m_buttn.pack()
 
 
 # Creating the Authentication Function
+import time
+
 def Authentication1():
+    # Define a variable to store the last failed attempt time
+    global last_failed_attempt_time
+    now = time.time()
+    
+    if last_failed_attempt_time is not None and now - last_failed_attempt_time < 180:
+        # If the user has failed authentication within the last 3 minutes, show a message
+        # and do not create the authentication window again.
+        alert('Too Many Attempts', 'You can retry after 3 minutes.')
+        return
+    
+    last_failed_attempt_time = None  # Reset last_failed_attempt_time since the authentication window will be displayed
 
     # Creating Tkinter Window
     Authenticate = Toplevel()
@@ -391,8 +503,9 @@ def Authentication1():
     AuthenticateFrame.pack(fill="both", expand="yes")
     button_frame1 = Frame(AuthenticateFrame)
     button_frame1.pack()
+    
     def show_password():
-        if m_password_entry.cget('show')=='*':
+        if m_password_entry.cget('show') == '*':
             m_password_entry.config(show='')
         else:
             m_password_entry.config(show='*')
@@ -407,9 +520,10 @@ def Authentication1():
     # Where the real authentication code goes.
     # This one is for Password Notebook.:
     global failed_attempts
-    failed_attempts=0
-    def RealAuthenticate1():
-        global failed_attempts
+    failed_attempts = 0
+
+    def RealAuthenticate3():
+        global failed_attempts, last_failed_attempt_time
         m_entry = m_password_entry.get()
         if m_entry == m_password:
             Authenticate.destroy()
@@ -418,6 +532,7 @@ def Authentication1():
             failed_attempts += 1
             if failed_attempts >= 3:
                 m_password_entry.config(state="disabled")  # Disable the password entry
+                last_failed_attempt_time = time.time()  # Set the last_failed_attempt_time to the current time
                 m_password_entry.after(300000, reset_failed_attempts)
             alert('Wrong Password', 'Password is Incorrect', kind='warning')
             print(failed_attempts)
@@ -428,11 +543,27 @@ def Authentication1():
         m_password_entry.config(state="normal")
 
     Auth_Button = Button(
-        button_frame1, text='Authenticate', command=RealAuthenticate1)
+        button_frame1, text='Authenticate', command=RealAuthenticate3)
     Auth_Button.pack()
 
+# Initialize last_failed_attempt_time as None at the beginning of your code
+last_failed_attempt_time = None
+
+
+import time
 
 def Authentication2():
+    # Define a variable to store the last failed attempt time
+    global last_failed_attempt_time
+    now = time.time()
+    
+    if last_failed_attempt_time is not None and now - last_failed_attempt_time < 180:
+        # If the user has failed authentication within the last 3 minutes, show a message
+        # and do not create the authentication window again.
+        alert('Too Many Attempts', 'You can retry after 3 minutes.')
+        return
+    
+    last_failed_attempt_time = None  # Reset last_failed_attempt_time since the authentication window will be displayed
 
     # Creating Tkinter Window
     Authenticate = Toplevel()
@@ -446,30 +577,27 @@ def Authentication2():
     AuthenticateFrame.pack(fill="both", expand="yes")
     button_frame1 = Frame(AuthenticateFrame)
     button_frame1.pack()
-
+    
     def show_password():
-        if m_password_entry.cget('show')=='*':
+        if m_password_entry.cget('show') == '*':
             m_password_entry.config(show='')
         else:
-            masterpassword.config(show='*')
+            m_password_entry.config(show='*')
 
-    # Entry Field for Password
     Check_button = Checkbutton(AuthenticateFrame, text='show password', command=show_password)
     Check_button.pack()
 
-
-    # Where the real authentication code goes.
-    # This one is for Password Notebook.
-
+    # Entry Field for Password
     m_password_entry = Entry(AuthenticateFrame, width=25, show='*')
     m_password_entry.pack()
 
+    # Where the real authentication code goes.
+    # This one is for Password Notebook.:
     global failed_attempts
-    failed_attempts=0
+    failed_attempts = 0
 
-
-    def RealAuthenticate2():
-        global failed_attempts
+    def RealAuthenticate3():
+        global failed_attempts, last_failed_attempt_time
         m_entry = m_password_entry.get()
         if m_entry == m_password:
             Authenticate.destroy()
@@ -478,6 +606,7 @@ def Authentication2():
             failed_attempts += 1
             if failed_attempts >= 3:
                 m_password_entry.config(state="disabled")  # Disable the password entry
+                last_failed_attempt_time = time.time()  # Set the last_failed_attempt_time to the current time
                 m_password_entry.after(300000, reset_failed_attempts)
             alert('Wrong Password', 'Password is Incorrect', kind='warning')
             print(failed_attempts)
@@ -488,8 +617,12 @@ def Authentication2():
         m_password_entry.config(state="normal")
 
     Auth_Button = Button(
-        button_frame1, text='Authenticate', command=RealAuthenticate2)
+        button_frame1, text='Authenticate', command=RealAuthenticate3)
     Auth_Button.pack()
+
+# Initialize last_failed_attempt_time as None at the beginning of your code
+last_failed_attempt_time = None
+
 
     
 
