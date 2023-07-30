@@ -23,7 +23,7 @@ class IPFormatter(logging.Formatter):
 
     def format(self, record):
         # Add the client's IP address to the log message
-        record.msg = f'{socket.gethostbyname(socket.gethostname())} - {record.msg}'
+        record.msg = f' {record.msg}'
         return super().format(record)
 
 logger = logging.getLogger('password manager')
@@ -126,6 +126,7 @@ def Authentication3():
             ip_address = socket.gethostbyname(socket.gethostname())
             logger.info(f"Authentication SUCCESS to store a backup from IP: {ip_address}")
         else:
+            ip_address = socket.gethostbyname(socket.gethostname())
             logger.info(f"Authentication FAILED to store a backup from IP: {ip_address}")
             failed_attempts += 1
             if failed_attempts >= 3:
@@ -236,6 +237,9 @@ def save_master():
         password_write = m_password.encode('utf-8')
         password_write = my_fernet.encrypt(password_write)
         f.write(password_write)
+        ip_address = socket.gethostbyname(socket.gethostname())
+        logger.info(f"master password defined from, IP: {ip_address}")
+
     First_time.destroy()
     root.deiconify()
     encrypt_db()
