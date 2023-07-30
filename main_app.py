@@ -5,7 +5,38 @@ import random
 from tkinter import messagebox
 import shutil
 import time
+import logging
+import logging.handlers
+import socket
 
+
+#setting up logging-config
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+#creating logger instance 
+logger= logging.getLogger('password manager')
+
+#creating a syslog handker to send  log messages to syslog server
+syslog_handler = logging.handlers.SysLogHandler(address='/dev/log')
+syslog_handler.setLevel(logging.INFO)
+
+# Setting the formatter for the syslog messages
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+syslog_handler.setFormatter(formatter)
+
+# Adding the syslog handler to the logger
+logger.addHandler(syslog_handler)
+
+# Creating a FileHandler to save log messages in a local file
+file_handler = logging.FileHandler('password_manager.log')
+file_handler.setLevel(logging.INFO)
+
+# Setting the formatter for the file log messages
+file_handler.setFormatter(formatter)
+
+# Add the file handler to the logger
+logger.addHandler(file_handler)
 
 # Master Password
 m_password = ""
@@ -85,7 +116,10 @@ def Authentication3():
         if m_entry == m_password:
             Authenticate.destroy()
             store_pw()
+            ip_address = socket.gethostbyname(socket.gethostname())
+            logger.info(f"Authentication SUCCESS to store a backup from IP: {ip_address}")
         else:
+            logger.info(f"Authentication FAILED to store a backup from IP: {ip_address}")
             failed_attempts += 1
             if failed_attempts >= 3:
                 m_password_entry.config(state="disabled")  # Disable the password entry
@@ -110,9 +144,9 @@ last_failed_attempt_time = None
 
 
 def store_pw():
-    global path
 
     def copy_file():
+        global path
         path = store_entry.get()
         shutil.copy("pw.txt", path)
         messagebox.showinfo("password saved")
@@ -130,6 +164,9 @@ def store_pw():
 
     store_bttn = Button(store_label, text="Store", command=copy_file)  # Moved this line inside store_pw()
     store_bttn.pack()
+
+    ip_address = socket.gethostbyname(socket.gethostname())
+    logger.info(f"Password stored to : {path}, IP: {ip_address}")
 
     
 
@@ -295,6 +332,9 @@ def Pw_Notebook():
             a_pass.destroy()
             Pw_Notebook_reload()
             alert('Information', 'Password Saved to Password Notebook')
+            Url_added=app_id_e.get()
+            ip_address = socket.gethostbyname(socket.gethostname())
+            logger.info(f"password added for:{Url_added} from IP: {ip_address}")
 
         global a
     
@@ -362,6 +402,10 @@ def Pw_Notebook():
             a_pass.destroy()
             Pw_Notebook_reload()
             alert('Information', 'Password Deleted')
+            Url_deleted=app_name_delete.get()
+            ip_address = socket.gethostbyname(socket.gethostname())
+            logger.info(f"password deleted for:{Url_deleted} from IP: {ip_address}")
+
 
         a_pass = Toplevel()
         a_pass.title('Delete Password')
@@ -457,6 +501,8 @@ def Settings():
             password_write = m_password.encode('utf-8')
             password_write = my_fernet.encrypt(password_write)
             f.write(password_write)
+            ip_address = socket.gethostbyname(socket.gethostname())
+            logger.info(f"master password changed from IP: {ip_address}")
             alert('Info', 'Master Password has been changed')
 
     masterpassword_new = Entry(change_m_frame, show='*')
@@ -528,6 +574,8 @@ def Authentication1():
         if m_entry == m_password:
             Authenticate.destroy()
             Pw_Notebook()
+            ip_address = socket.gethostbyname(socket.gethostname())
+            logger.info(f"password notebook seen from IP: {ip_address}")
         else:
             failed_attempts += 1
             if failed_attempts >= 3:
@@ -597,11 +645,14 @@ def Authentication2():
     failed_attempts = 0
 
     def RealAuthenticate3():
+        ip_address = socket.gethostbyname(socket.gethostname())
         global failed_attempts, last_failed_attempt_time
         m_entry = m_password_entry.get()
         if m_entry == m_password:
             Authenticate.destroy()
             Settings()
+            logger.info(f"settings change from IP: {ip_address}")
+
         else:
             failed_attempts += 1
             if failed_attempts >= 3:
@@ -638,8 +689,15 @@ Settings_Bttn.grid(row=1, column=0)
 
 
 def alert(title, message, kind='info', hidemain=True):
+    ip_address = socket.gethostbyname(socket.gethostname())
     if kind not in ('error', 'warning', 'info'):
+        logger.info(f"a try to input wrong input from IP: {ip_address}")
         raise ValueError('Unsupported alert kind.')
+    
+    
+        
+    
+
 
     show_method = getattr(messagebox, 'show{}'.format(kind))
     show_method(title, message)
