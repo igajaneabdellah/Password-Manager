@@ -11,21 +11,28 @@ import socket
 
 
 #setting up logging-config
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S',  # Specify the date format for asctime
+    handlers=[
+        logging.FileHandler('password_manager.log'),  # Log to a file
+        logging.StreamHandler()  # Log to the console
+    ])
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+class IPFormatter(logging.Formatter):
+    def __init__(self):
+        super().__init__()
 
-#creating logger instance 
-logger= logging.getLogger('password manager')
+    def format(self, record):
+        # Add the client's IP address to the log message
+        record.msg = f'{socket.gethostbyname(socket.gethostname())} - {record.msg}'
+        return super().format(record)
 
-#creating a syslog handker to send  log messages to syslog server
-syslog_handler = logging.handlers.SysLogHandler(address='/dev/log')
-syslog_handler.setLevel(logging.INFO)
+logger = logging.getLogger('password manager')
+logger.setLevel(logging.INFO)
 
-# Setting the formatter for the syslog messages
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# Create the custom formatter and add it to the logger
+formatter = IPFormatter()
+syslog_handler = logging.handlers.SocketHandler('localhost', logging.handlers.SYSLOG_UDP_PORT)
 syslog_handler.setFormatter(formatter)
-
-# Adding the syslog handler to the logger
 logger.addHandler(syslog_handler)
 
 # Creating a FileHandler to save log messages in a local file
