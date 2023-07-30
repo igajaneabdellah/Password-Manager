@@ -8,6 +8,7 @@ import time
 import logging
 import logging.handlers
 import socket
+import os
 
 
 #setting up logging-config
@@ -45,6 +46,30 @@ file_handler.setFormatter(formatter)
 # Add the file handler to the logger
 logger.addHandler(file_handler)
 
+
+def generate_report(log_file_path, report_file_name):
+    # Get the current working directory
+    current_directory = os.getcwd()
+
+    # Create the report file path by joining the current directory with the report file name
+    report_file_path = os.path.join(current_directory, report_file_name)
+
+    # Read the log file and generate the report
+    # (Replace this part with your actual report generation logic)
+    with open(log_file_path, 'r') as log_file:
+        log_data = log_file.read()
+
+    # Write the report data to the report file
+    with open(report_file_path, 'w') as report_file:
+        report_file.write(log_data)
+
+# Example usage:
+log_file_path = "password_manager.log"
+report_file_name = "report.txt"
+generate_report(log_file_path, report_file_name)
+
+
+
 # Master Password
 m_password = ""
 
@@ -69,8 +94,6 @@ secondary_frame.pack(padx=20, pady=20)
 rbutton_frame.pack(padx=10, pady=0)
 output_frame.pack(padx=15, pady=5)
 bottom_bar.pack(side=BOTTOM)
-
-
 
 
 def Authentication3():
